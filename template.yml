@@ -1,43 +1,16 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Description: >
-  Hello World
-
+Description: AWS SAM template
 Resources:
-  SqsQueue:
-    Type: AWS::SQS::Queue
-  Producer:
+  LambdaFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: src/producer
-      Handler: lambda_function.lambda_handler
-      Runtime: python3.9
-      Architectures:
-        - x86_64
-      Environment:
-        Variables:
-          URL_QUEUE: !GetAtt SqsQueue.QueueUrl
-          QUEUE_NAME: !GetAtt SqsQueue.QueueName
-      Policies:
-        - SQSSendMessagePolicy:
-            QueueName: !GetAtt SqsQueue.QueueName
+      CodeUri: /
+      Handler: index.handler
+      Runtime: python3.10
       Events:
-        HelloWorldApi:
+        ProxyApiRoot:
           Type: Api
           Properties:
-            Path: /producer
-            Method: post
-  Consumer:
-    Type: AWS::Serverless::Function
-    Properties:
-      CodeUri: src/consumer
-      Handler: lambda_function.lambda_handler
-      Runtime: python3.9
-      Architectures:
-        - x86_64
-      Events:
-        SqsQueue:
-          Type: SQS
-          Properties:
-            Queue: !GetAtt SqsQueue.Arn
-            BatchSize: 10
+            Path: /
+            Method: ANY
