@@ -1,16 +1,38 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Description: AWS SAM template
+Description: Exemplo de template AWS SAM para criar um API Gateway com duas Lambdas
+
 Resources:
-  LambdaFunction:
+  # Primeira função Lambda
+  FirstLambdaFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: /
-      Handler: index.handler
-      Runtime: python3.10
+      Handler: lambda_function.lambda_handler
+      Runtime: python3.9
+      CodeUri: src/
       Events:
-        ProxyApiRoot:
+        FirstApi:
           Type: Api
           Properties:
             Path: /
-            Method: ANY
+            Method: get
+
+  # Segunda função Lambda
+  SecondLambdaFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: second_lambda.etc
+      Runtime: python3.9
+      CodeUri: src/
+      Events:
+        SecondApi:
+          Type: Api
+          Properties:
+            Path: /
+            Method: post
+
+Outputs:
+  # Saída para o endpoint do API Gateway
+  ApiGatewayUrl:
+    Description: URL do API Gateway
+    Value: !Sub 'https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/'
